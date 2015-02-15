@@ -43,4 +43,63 @@ boost::ptr_vector\<int\> v ;<br/>
 std::copy(a.begin(), a.end(), boost::ptr_container::ptr_back_inserter(v)) ; //從後面插進去<br/>
 
 ----
+###ScopeExit
+
+簡單sample<br/>
+當函數離開做用域時，會自動執行這個function<br/>
+````
+int * foo()
+{
+     int *i = new int{10} ;
+     BOOST_SCOPE_EXIT(&i)
+     {
+          delete i;<br/>
+          i = 0;<br/>
+     } BOOST_SCOPE_EXIT_END
+}
+````
+
+----
+###Pool
+
+透過boost pool來對memory pool進行監悾、分配<br/>
+當該pool解構時，會自動free掉內存，避免memory leak的問題<br/>
+
+1  boost::simple_segregated_storage<br/>
+底層function，做出一個memory storage出，並且分配記憶體給別人<br/>
+理論上我們並不需要用到他<br/>
+
+2  boost::object_pool<br/>
+
+````
+  boost::object_pool<int> pool;
+
+  int *i = pool.malloc();     // 只負責分配空間
+  *i = 1;
+
+  int *j = pool.construct(2); // 呼叫constructer
+````
+
+3  boost::singleton_pool<br/>
+用法如下<br/>
+
+````
+struct intpool { };
+struct intpool2 { };
+typedef singleton_pool<intpool, sizeof(int)> ipool1;
+typedef singleton_pool<intpool2, sizeof(int)> ipool2;
+    for (int i = 0; i < 10; ++i)
+     {
+         int *q1 = (int *)ipool1::malloc();
+         int *q2 = (int *)ipool2::malloc();
+        *q1 = i;
+        *q2 = i*i;
+        cout << *q1 << " and " << *q2 << endl;
+     }
+     ipool1::purge_memory();
+     ipool2::purge_memory();
+````
+4  boost::pool_allocator/boost::fast_pool_allocator
+主要跟STL容器一起使用，替代STL的allocator
+至於其他更高階的用法實在是沒有心力去追了阿~~~
 
