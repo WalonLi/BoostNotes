@@ -1,5 +1,7 @@
 #ignore file list
 main
+Makefile
+*.pro.user
 
 # Created by https://www.gitignore.io
 

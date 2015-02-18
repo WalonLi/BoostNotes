@@ -99,7 +99,7 @@ typedef singleton_pool<intpool2, sizeof(int)> ipool2;
      ipool1::purge_memory();
      ipool2::purge_memory();
 ````
-4  boost::pool_allocator/boost::fast_pool_allocator
-主要跟STL容器一起使用，替代STL的allocator
+4  boost::pool_allocator/boost::fast_pool_allocator<br/>
+主要跟STL容器一起使用，替代STL的allocator<br/>
 至於其他更高階的用法實在是沒有心力去追了阿~~~
 
