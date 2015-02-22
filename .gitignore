@@ -3,6 +3,7 @@ main
 Makefile
 *.pro.user
 *.html
+ch*
 
 # Created by https://www.gitignore.io
 
