@@ -14,6 +14,7 @@
 #include <boost/scope_exit.hpp>
 #include <boost/pool/object_pool.hpp>
 
+
 using namespace std;
 
 void smart_poiner()

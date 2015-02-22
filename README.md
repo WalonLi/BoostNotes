@@ -11,4 +11,3 @@ It's my boost notes.
 ##### Boost e-book
 [The Boost c++ Libraries](http://theboostcpplibraries.com/)
 
-
