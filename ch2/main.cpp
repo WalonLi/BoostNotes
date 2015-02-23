@@ -7,6 +7,8 @@
 #include <string>
 #include <locale>
 #include <boost/algorithm/string.hpp>
+#include <boost/regex.h>
+#include <boost/tokenizer.hpp>
 
 using namespace std;
 
@@ -29,17 +31,50 @@ void string_algorithms()
     std::cout << erase_head_copy(s, 5) << '\n';
     std::cout << erase_tail_copy(s, 9) << '\n';
     */
+    /*
     std::string s = "Boost C++ Libraries";
     std::cout.setf(std::ios::boolalpha);
     std::cout << starts_with(s, "Boost") << '\n';
     std::cout << ends_with(s, "Libraries") << '\n';
     std::cout << contains(s, "C++") << '\n';
     std::cout << lexicographical_compare(s, "Boost") << '\n';
+    */
+
+
+
+}
+
+void tokenizer_func()
+{
+    /*
+    typedef boost::tokenizer<boost::char_separator<char>> tokenizer;
+    std::string s = "Boost C++ Libraries Hello";
+    tokenizer tok{s};
+    for (tokenizer::iterator it = tok.begin(); it != tok.end(); ++it)
+      std::cout << *it << '\n';
+      */
+    /*
+    typedef boost::tokenizer<boost::char_separator<char>> tokenizer;
+    std::string s = "Boost C++ Libraries";
+    boost::char_separator<char> sep{" "};
+    tokenizer tok{s, sep};
+    for (const auto &t : tok)
+      std::cout << t << '\n';
+    */
+    typedef boost::tokenizer<boost::char_separator<char>> tokenizer;
+    std::string s = "Boost C++ Libraries";
+    boost::char_separator<char> sep{" ", "+"};
+    tokenizer tok{s, sep};
+    for (const auto &t : tok)
+      std::cout << t << '\n';
+
 }
 
 int main()
 {
-    string_algorithms() ;
+    // string_algorithms() ;
+    tokenizer_func() ;
+
     cout << endl ;
 
     return 0;
