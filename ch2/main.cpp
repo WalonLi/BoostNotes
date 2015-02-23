@@ -9,6 +9,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/regex.h>
 #include <boost/tokenizer.hpp>
+#include <boost/spirit/include/qi.hpp>
 
 using namespace std;
 
@@ -70,11 +71,24 @@ void tokenizer_func()
 
 }
 
+void spirit_func()
+{
+    using namespace boost::spirit;
+
+    std::string s;
+    std::getline(std::cin, s);
+    auto it = s.begin();
+    bool match = qi::parse(it, s.end(), ascii::digit);
+    std::cout << std::boolalpha << match << '\n';
+    if (it != s.end())
+        std::cout << std::string{it, s.end()} << '\n';
+}
+
 int main()
 {
     // string_algorithms() ;
-    tokenizer_func() ;
-
+    // tokenizer_func() ;
+    spirit_func() ;
     cout << endl ;
 
     return 0;
