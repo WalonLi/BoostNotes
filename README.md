@@ -10,4 +10,4 @@ It's my boost notes.
 [Download and install](http://www.boost.org/)
 ##### Boost e-book
 [The Boost c++ Libraries](http://theboostcpplibraries.com/)
-
+[simple chinese(1~16)](http://zh.highscore.de/cpp/boost/introduction.html)
