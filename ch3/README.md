@@ -2,7 +2,7 @@
 
 ----
 ###MultiIndex
-[參考資料](http://blog.tinlans.org/2008/04/09/boostmultiindex/)
+[參考資料](http://blog.tinlans.org/2008/04/09/boostmultiindex/)<br/>
 提供一種Container，裏面可以塞不同的形別，讓該container可以吐出不同型別的iterator.
 例如想要把std::vector和std::set塞再同一個container做管理，就可以用這個
 ````
@@ -149,6 +149,56 @@ typedef multi_index_container<
     >
   >
 > animal_multi;
+````
+
+----
+###Bimap
+用法類似std::map，但他不止可以利用key找，也可以利用value找key
+底層是用multi_index去實作，所以你也可以利用其method(例如modify_key, modify_data)做些你要做的事
+````
+int main()
+{
+  typedef boost::bimap<std::string, int> bimap;
+  bimap animals;
+
+  animals.insert({"cat", 4});
+  animals.insert({"shark", 0});
+  animals.insert({"spider", 8});
+
+  std::cout << animals.left.count("cat") << '\n';
+  std::cout << animals.right.count(8) << '\n';
+
+  for (auto it = animals.begin(); it != animals.end(); ++it)
+    std::cout << it->left << " has " << it->right << " legs\n";
+}
+````
+Default的情況下，每個key/value是利用boost::bimaps::set_of
+如果要像std::multimap(key值可以重複)，可以利用boost::bimaps::multiset_of
+````
+  // Using boost::bimaps::set_of explicit，這會等同於上面
+  typedef boost::bimap<boost::bimaps::set_of<std::string>,
+    boost::bimaps::set_of<int>> bimap;
+  // like as std::multimap
+  typedef boost::bimap<boost::bimaps::set_of<std::string>,
+    boost::bimaps::multiset_of<int>> bimap;
+````
+boost::bimaps::unordered_set_of/boost::bimaps::unordered_multiset_of/boost::bimaps::list_of/boost::bimaps::vector_of
+這些都和C++標準裡差不多用法
+boost::bimaps::unconstrainted_set_of則是讓我們無法用該元素找資料
+````
+  // 這樣我們就不能利用value(第二個資料)來做search or count，變得很像標準的std::map
+  typedef boost::bimap<std::string,
+    boost::bimaps::unconstrained_set_of<int>> bimap;
+  bimap animals;
+
+  animals.insert({"cat", 4});
+  animals.insert({"shark", 0});
+  animals.insert({"spider", 8});
+
+  auto it = animals.left.find("cat");
+  //這裡繼承了multi_index的特性，可以利用iterator來修改key/value，這在std::map是做不到的
+  animals.left.modify_key(it, boost::bimaps::_key = "dog");
+  std::cout << it->first << '\n';
 ````
 
 ----
