@@ -303,7 +303,102 @@ int main()
 ````
 
 ----
+####Heap
 
+1  Prioriy Queue - 大部分用法都跟std::priority_queue一樣，多了一個queue的element count比較而已
+````
+  priority_queue<int> pq;
+  pq.push(2);
+  pq.push(3);
+  pq.push(1);
 
+  for (int i : pq)
+    std::cout << i << '\n';
 
+  priority_queue<int> pq2;
+  pq2.push(4);
+  std::cout << std::boolalpha << (pq > pq2) << '\n';
+````
 
+2  binomial_heap - 提供一種queue，support merge/update等等
+````
+  binomial_heap<int> bh;
+  bh.push(2);
+  bh.push(3);
+  bh.push(1);
+
+  binomial_heap<int> bh2;
+  bh2.push(4);
+  bh.merge(bh2);
+  
+  auto handle = bh.push(9); // restore 9 element handle
+  bh.update(handle, 4);     // use this handle to update element
+
+  std::cout << bh.top() << '\n';
+
+  for (auto it = bh.ordered_begin(); it != bh.ordered_end(); ++it) // 從high priority到low priority
+    std::cout << *it << '\n';
+  std::cout << std::boolalpha << bh2.empty() << '\n'; // merge完後會變空的!
+````
+
+----
+####Intrusive
+
+比一般std的container performance還要好，但是比較難用<br/>
+他不會為每個element new出一個空間，而是會指向實體的object(應該是該obj的reference)，所以他在call push_back時
+理所當然的也不會有任何exception，因為不用copy or allocate memory阿，這也是為什麼performance比較好的原因
+
+限制也挺多的，一來不能隨便把你想要的std obj放進去，你必須時做你的class，並繼承一些東東，
+就像下面那段code，如果想要存進intrusive的話，必須繼承boost::list_back_hook，
+如果今天存的element是pointer的話，就要格外小心，不只要移除list item，更要把該element free掉<br/>
+ps: intrusive也有support set，但大致用法差不多，就不介紹
+````
+using namespace boost::intrusive;
+
+struct animal : public list_base_hook<>
+{
+  std::string name;
+  int legs;
+  animal(std::string n, int l) : name{std::move(n)}, legs{l} {}
+};
+
+int main()
+{
+  animal a1{"cat", 4};
+  animal a2{"shark", 0};
+  animal a3{"spider", 8};
+
+  typedef list<animal> animal_list; //it's a boost intrusive list, behavior like as std::list
+  animal_list animals;
+  animals.push_back(a1);
+  animals.push_back(a2);
+  animals.push_back(a3);
+  a1.name = "dog";
+
+  // be careful if you store a pointer
+  animal *a4 = new animal{"duck", 10};
+  animals.push_back(*a4);
+  // If you want to remove pointer element, provide three way to use.
+  // 1.
+  animals.pop_back();
+  delete a4;
+  // 2.
+  animals.pop_back_and_dispose([](animal *a){ delete a; });
+  // 3. 這個更進階，利用boost的link mode來決定要不要移除element
+  //    具體而言怎麼做就不講了，可以直接去看boost::intrusive::constant_time_size和link mode
+  struct animal : public list_base_hook<link_mode<auto_unlink>> // support link mode
+  {
+    std::string name;
+    int legs;
+    animal(std::string n, int l) : name{std::move(n)}, legs{l} {}
+  };
+  typedef constant_time_size<false> constant_time_size;
+  typedef list<animal, constant_time_size> animal_list;
+  animal_list animals;
+  animals.push_back(*a3) ;
+  delete a3;                //會自動從list移除掉a3，超屌
+  
+  for (const animal &a : animals)
+    std::cout << a.name << '\n';    // print dog, shark, spider
+}
+````
