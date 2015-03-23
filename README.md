@@ -4,6 +4,8 @@
 ######Notes
 ```
 It's my boost notes.
+
+ps:最近在研究寫OS，所以比較少更新~~
 ```
 ----
 ##### Boost 1.57.0
